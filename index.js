@@ -14,7 +14,8 @@ const config = require("./isPlaying.json")
 config.status = false;
 config.paused = false;
 config.already_playing= false;
-fs.writeFile("./isPlaying.json", JSON.stringify(config), function writeJSON(err) {
+config.queueloop = true;
+fs.writeFileSync("./isPlaying.json", JSON.stringify(config), function writeJSON(err) {
     if (err) {
     console.log(`Final check writing error -> ${err}`)
     } 
@@ -34,7 +35,15 @@ client.on('messageCreate', async message => {
     if(message.author.bot){
         return;
     }
-  
+  let guild = message.guild;
+const role = guild.roles.cache.find(r => r.name === "999")
+
+
+ if(!(message.member.roles.cache.has(role.id))){
+return;
+}
+	if(message.member.voice){
+
     if (message.content === `${prefix} play`) {
         var obj = JSON.parse(fs.readFileSync('./isPlaying.json', 'utf8'));
         
@@ -56,7 +65,7 @@ client.on('messageCreate', async message => {
             player.play(resource);
             connection.subscribe(player);
             config.status = true;
-            fs.writeFile("./isPlaying.json", JSON.stringify(config), function writeJSON(err) {
+            fs.writeFileSync("./isPlaying.json", JSON.stringify(config), function writeJSON(err) {
                 if (err) {
                 console.log(`Final check writing error -> ${err}`)
                 } 
@@ -83,7 +92,7 @@ client.on('messageCreate', async message => {
                     
                     });
                     config.already_playing = true;
-                    fs.writeFile("./isPlaying.json", JSON.stringify(config), function writeJSON(err) {
+                    fs.writeFileSync("./isPlaying.json", JSON.stringify(config), function writeJSON(err) {
                         if (err) {
                         console.log(`Final check writing error -> ${err}`)
                         } 
@@ -121,7 +130,7 @@ client.on('messageCreate', async message => {
         if(obj.status ===true){
         config.status = false;
         config.already_playing = false;
-        fs.writeFile("./isPlaying.json", JSON.stringify(config), function writeJSON(err) {
+        fs.writeFileSync("./isPlaying.json", JSON.stringify(config), function writeJSON(err) {
             if (err) {
             console.log(`Final check writing error -> ${err}`)
             } 
@@ -140,7 +149,7 @@ client.on('messageCreate', async message => {
         if(obj.paused===false && obj.status ===true){
         player.pause();
         config.paused= true;
-        fs.writeFile("./isPlaying.json", JSON.stringify(config), function writeJSON(err) {
+        fs.writeFileSync("./isPlaying.json", JSON.stringify(config), function writeJSON(err) {
             if (err) {
             console.log(`Final check writing error -> ${err}`)
             } 
@@ -157,7 +166,7 @@ client.on('messageCreate', async message => {
     if (message.content === `${prefix} queueloop`) {
     if(config.queueloop ===true){
         config.queueloop= false;
-        fs.writeFile("./isPlaying.json", JSON.stringify(config),async function writeJSON(err) {
+        fs.writeFileSync("./isPlaying.json", JSON.stringify(config),async function writeJSON(err) {
             if (err) {
             console.log(`Final check writing error -> ${err}`)
             } else {
@@ -167,7 +176,7 @@ client.on('messageCreate', async message => {
         })
     } else if(config.queueloop === false){
         config.queueloop= true;
-        fs.writeFile("./isPlaying.json", JSON.stringify(config),async function writeJSON(err) {
+        fs.writeFileSync("./isPlaying.json", JSON.stringify(config),async function writeJSON(err) {
             if (err) {
             console.log(`Final check writing error -> ${err}`)
             } else {
@@ -186,7 +195,8 @@ client.on('messageCreate', async message => {
         if(obj.paused ===true){
         player.unpause();
         config.status = true;
-        fs.writeFile("./isPlaying.json", JSON.stringify(config), function writeJSON(err) {
+        config.paused = false;
+        fs.writeFileSync("./isPlaying.json", JSON.stringify(config), function writeJSON(err) {
             if (err) {
             console.log(`Final check writing error -> ${err}`)
             } 
@@ -198,7 +208,7 @@ client.on('messageCreate', async message => {
     
     } 
 } 
-
+}
 
 });
 
